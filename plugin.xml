@@ -9,7 +9,7 @@ id="com.plugin.gcm.PushPlugin"
     <license>Apache 2.0</license>
     <keywords>cordova,push</keywords>
     
-    <js-module src="www/PushPlugin.js" name="Media">
+    <js-module src="www/PushPlugin.js" name="PushPlugin">
         <clobbers target="window.PushPlugin" />
     </js-module>
     
@@ -21,7 +21,7 @@ id="com.plugin.gcm.PushPlugin"
             </feature>
         </config-file>
         
-        <config-file target="AndroidManifest.xml" parent="/manifest">
+        <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.GET_TASKS" />
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -31,7 +31,7 @@ id="com.plugin.gcm.PushPlugin"
             <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
         </config-file>
         
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <config-file target="AndroidManifest.xml" parent="/*">
             <activity android:name="com.plugin.gcm.PushHandlerActivity"/>
             <receiver android:name="com.plugin.gcm.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
                 <intent-filter>
@@ -44,7 +44,7 @@ id="com.plugin.gcm.PushPlugin"
         </config-file>
         <source-file src="src/android/libs/gcm.jar" target-dir="libs/" />
         <source-file src="src/android/libs/google-play-services.jar" target-dir="libs/" />
-         <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs/" />
+        <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs/" />
         <source-file src="src/android/com/plugin/gcm/GcmBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
         <source-file src="src/android/com/plugin/gcm/GcmIntentService.java" target-dir="src/com/plugin/gcm/" />
         <source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
