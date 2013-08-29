@@ -44,10 +44,10 @@ id="com.plugin.gcm.PushPlugin"
         <source-file src="src/android/libs/gcm.jar" target-dir="libs/" />
         <source-file src="src/android/libs/google-play-services.jar" target-dir="libs/" />
         <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs/" />
-        <source-file src="src/android/com/plugin/gcm/GcmBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
-        <source-file src="src/android/com/plugin/gcm/GcmIntentService.java" target-dir="src/com/plugin/gcm/" />
-        <source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
-        <source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/GcmBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/GcmIntentService.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
     </platform>
      
      <!-- ios -->
