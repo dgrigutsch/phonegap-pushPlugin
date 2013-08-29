@@ -2,9 +2,9 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
-id="org.apache.cordova.core.AudioHandler"
+id="com.plugin.gcm.PushPlugin"
     version="0.2.0">
-    <name>Media</name>
+    <name>PushPlugin</name>
     <description>Cordova PushPlugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,push</keywords>
