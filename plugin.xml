@@ -10,7 +10,7 @@ id="com.plugin.gcm.PushPlugin"
     <keywords>cordova,push</keywords>
     
     <js-module src="www/PushPlugin.js" name="PushPlugin">
-        <clobbers target="window.PushPlugin" />
+        <clobbers target="PushPlugin" />
     </js-module>
     
     <!-- android -->
