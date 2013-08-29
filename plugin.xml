@@ -30,7 +30,6 @@ id="com.plugin.gcm.PushPlugin"
             <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
             <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
         </config-file>
-        
         <config-file target="AndroidManifest.xml" parent="/*">
             <activity android:name="com.plugin.gcm.PushHandlerActivity"/>
             <receiver android:name="com.plugin.gcm.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
