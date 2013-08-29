@@ -1,10 +1,3 @@
-/*
-*
-*
-*
- */
-cordova.define("com.plugin.gcm.PushPlugin", function(require, exports, module) {
-
     var exec = require('cordova/exec');
 
     var PushPlugin = {
@@ -30,5 +23,3 @@ cordova.define("com.plugin.gcm.PushPlugin", function(require, exports, module) {
         }
     };
     module.exports = PushPlugin;
-
-});
