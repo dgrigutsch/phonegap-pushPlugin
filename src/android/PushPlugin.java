@@ -96,7 +96,7 @@ public class PushPlugin extends CordovaPlugin {
           if (ACTIVATE_NOTIFICATIONS.equals(action)) {
               
               
-              JSONObject jo = data.getJSONObject(0);
+              JSONObject jo = args.getJSONObject(0);
               SENDER_ID = (String) jo.get("senderID");
 
               if (checkPlayServices()) {
