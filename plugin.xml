@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+xmlns:android="http://schemas.android.com/apk/res/android"
+id="org.apache.cordova.core.AudioHandler"
+    version="0.2.0">
+    <name>Media</name>
+    <description>Cordova PushPlugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,push</keywords>
+    
+    <js-module src="www/PushPlugin.js" name="Media">
+        <clobbers target="window.PushPlugin" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="PushPlugin" >
+                <param name="android-package" value="com.plugin.gcm.PushPlugin"/>
+            </feature>
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.GET_TASKS" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+            <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+            <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="com.plugin.gcm.PushHandlerActivity"/>
+            <receiver android:name="com.plugin.gcm.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+                <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+            </receiver>
+            <service android:name="com.plugin.gcm.GcmIntentService" />
+        </config-file>
+        <source-file src="src/android/libs/gcm.jar" target-dir="libs/" />
+        <source-file src="src/android/libs/google-play-services.jar" target-dir="libs/" />
+         <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs/" />
+        <source-file src="src/android/com/plugin/gcm/GcmBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/com/plugin/gcm/GcmIntentService.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
+        <source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
+    </platform>
+     
+     <!-- ios -->
+     <platform name="ios">
+         <!-- Cordova < 2.3 -->
+         <plugins-plist key="PushPlugin" string="PushPlugin" />
+         <!-- Cordova >= 2.3 -->
+         <config-file target="config.xml" parent="/*">
+             <feature name="PushPlugin">
+                 <param name="ios-package" value="PushPlugin" /> 
+             </feature>
+         </config-file>
+         
+         <header-file src="src/ios/PushPlugin.h" />
+         <source-file src="src/ios/PushPlugin.m" />
+     </platform>    
+            
+</plugin>
