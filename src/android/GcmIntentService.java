@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import org.apache.cordova.PluginManager;
 
 import java.util.List;
 
@@ -51,12 +52,14 @@ public class GcmIntentService extends IntentService {
                 {
                     boolean	foreground = this.isInForeground();
                     extras.putBoolean("foreground", foreground);
-                    if (foreground)
-                        PushPlugin.sendExtras(extras);
-                    else
+                    if (foreground) {
+                        PushPlugin pushPlugin = PushPlugin.getInstance();
+                        pushPlugin.sendExtras(extras);
+                    }
+                    else {
                         createNotification(this.getApplicationContext(), extras);
+                    }
                 }
-
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -159,4 +162,3 @@ public class GcmIntentService extends IntentService {
     }
 
 }
-

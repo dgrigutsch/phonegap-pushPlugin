@@ -1,10 +1,5 @@
 package com.plugin.gcm;
 
-
-//import java.io.*;
-//import java.util.*;
-
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -25,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class PushPlugin extends CordovaPlugin {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -32,38 +29,31 @@ public class PushPlugin extends CordovaPlugin {
     private GoogleCloudMessaging gcm;
     private String regid;
 
+    private static CordovaWebView gWebView;
 
-    private   static CordovaWebView gWebView;
-    private   static Bundle gCachedExtras = null;
-
-    public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
 
-    private static String SENDER_ID = "";
+    private static String SENDER_ID;
 
     public static final String ACTIVATE_NOTIFICATIONS="activatePush";
     public static final String DEACTIVATE_NOTIFICATIONS="deactivatePush";
     public static final String BOOTSTRAP = "bootstrap";
     public static final String IS_PUSH_ACTIVATED = "isPushActivated";
+    private static ArrayList<String> msgCache;
 
-    private static String gECB;
+    private static PushPlugin instance;
 
-      private static PushPlugin instance = null;
-      private boolean isRunning = false;
-
-      private CallbackContext pushCallback;
+    private CallbackContext pushCallback;
 
       public PushPlugin() {
           instance = this;
-          this.setIsRunning(true);
       }
 
       private Context getApplicationContext() {
           return this.cordova.getActivity().getApplicationContext();
       }
 
-      // In order to keep the binding to PG JS, we need the plugin as a singleton
       public static PushPlugin getInstance(){
           if(instance == null){
               instance = new PushPlugin();
@@ -71,52 +61,44 @@ public class PushPlugin extends CordovaPlugin {
           return instance;
       }
 
-      public boolean isRunning(){
-          return isRunning;
-      }
-
-      /**
-      *
-      * @param b
-      */
-      public void setIsRunning(boolean b){
-          isRunning = b;
-      }
-
       @Override
       public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
           boolean result = false;
           pushCallback = callbackContext;
+          gWebView = this.webView;
 
           if(BOOTSTRAP.equals(action)){
-              isRunning = true;
+              gWebView = this.webView;
+              result = true;
+              if(msgCache.size() > 0) {
+                  Log.e(TAG,"Cache voll");
+                    for(String msg : msgCache) {
+                        sendJavascript(msg);
+                    }
+                  msgCache.clear();
+              }
           }
 
           if (ACTIVATE_NOTIFICATIONS.equals(action)) {
-              
-              
               JSONObject jo = args.getJSONObject(0);
               SENDER_ID = (String) jo.get("senderID");
+              Log.e(TAG,SENDER_ID);
 
               if (checkPlayServices()) {
                   gcm = GoogleCloudMessaging.getInstance(this.cordova.getActivity());
                   regid = getRegistrationId(this.cordova.getActivity());
-
                   if (regid.isEmpty()) {
-                      registerDevice();
+                      cordova.getThreadPool().execute(new Runnable() {
+                          public void run() {
+                            registerDevice();
+                          }
+                      });
                   }
               } else {
                   Log.i(TAG, "No valid Google Play Services APK found.");
               }
-              gWebView = this.webView;
               result = true;
-
-              if ( gCachedExtras != null) {
-                  Log.v(TAG, "sending cached extras");
-                  sendExtras(gCachedExtras);
-                  gCachedExtras = null;
-              }
               PushPlugin.getInstance().deliverActivationResult(regid, true);
           }
           else if (DEACTIVATE_NOTIFICATIONS.equals(action)) {
@@ -167,12 +149,14 @@ public class PushPlugin extends CordovaPlugin {
         return gWebView != null;
     }
 
-    public static void sendJavascript(JSONObject _json) {
-        String _d = "javascript:" + gECB + "(" + _json.toString() + ")";
-        Log.v(TAG, "sendJavascript: " + _d);
-
-        if (gECB != null && gWebView != null) {
-            gWebView.sendJavascript(_d);
+    public void sendJavascript(final String _json) {
+        if(this.webView != null){
+            this.webView.sendJavascript(String.format("window.PushPlugin.notificationCallback(%s);", _json));
+        }  else {
+              if(null == msgCache){
+                  msgCache = new ArrayList<String>();
+              }
+              msgCache.add(_json);
         }
     }
 
@@ -182,7 +166,7 @@ public class PushPlugin extends CordovaPlugin {
         gWebView.sendPluginResult(result, PushPlugin.getInstance().pushCallback.getCallbackId());
     }
 
-    public static void sendExtras(Bundle extras)
+    public void sendExtras(Bundle extras)
     {
         JSONObject jo = new JSONObject();
         String bl = "";
@@ -193,15 +177,14 @@ public class PushPlugin extends CordovaPlugin {
                 Log.e(TAG,"cannot "+e.getMessage());
             }
         }
-        PushPlugin.getInstance().webView.sendJavascript(String.format("window.plugins.npnPlugin.notificationCallback(%s);", jo.toString()));
+        Log.e(TAG,jo.toString());
+        sendJavascript(jo.toString());
     }
 
     public void onDestroy()
     {
         GCMRegistrar.onDestroy(getApplicationContext());
-        isRunning = false;
         gWebView = null;
-        gECB = null;
         super.onDestroy();
     }
 
@@ -266,6 +249,7 @@ public class PushPlugin extends CordovaPlugin {
             }
             regid = gcm.register(SENDER_ID);
             storeRegistrationId(PushPlugin.this.cordova.getActivity(), regid);
+            Log.d(TAG,"RegId: "+regid);
             return regid;
         } catch (Exception e){
             e.printStackTrace();
